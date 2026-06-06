@@ -33,39 +33,55 @@ class BaseCollector:
         self._source_dir.mkdir(parents=True, exist_ok=True)
     
     def _fetch_url(self, url: str, timeout: int = 30) -> bytes:
-        """Fetch URL content using Scrapling's Fetcher."""
-        from scrapling.fetchers import Fetcher
+        """Fetch URL content. Tries Scrapling first, falls back to urllib."""
         domain = urllib.parse.urlparse(url).netloc
-        
         if not self.circuit_breaker.can_request(domain):
             raise ConnectionError(f"Circuit open for {domain}")
-        
         self.rate_limiter.acquire_sync(domain)
         
         try:
+            from scrapling.fetchers import Fetcher
             fetcher = Fetcher(timeout=timeout, auto_match=False)
             response = fetcher.get(url, timeout=timeout)
             self.circuit_breaker.record_success(domain)
             return response.body if hasattr(response, 'body') else b""
-        except Exception as e:
-            self.circuit_breaker.record_failure(domain)
-            raise
+        except Exception:
+            # Fallback to urllib
+            try:
+                req = urllib.request.Request(url, headers={
+                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+                })
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
+                    data = resp.read()
+                self.circuit_breaker.record_success(domain)
+                return data
+            except Exception as e:
+                self.circuit_breaker.record_failure(domain)
+                raise
     
     def _fetch_text(self, url: str, timeout: int = 30) -> str:
-        """Fetch URL and return text content."""
-        from scrapling.fetchers import Fetcher
+        """Fetch URL text. Tries Scrapling first, falls back to urllib."""
         domain = urllib.parse.urlparse(url).netloc
         self.rate_limiter.acquire_sync(domain)
         try:
+            from scrapling.fetchers import Fetcher
             fetcher = Fetcher(timeout=timeout, auto_match=False)
             response = fetcher.get(url, timeout=timeout)
             self.circuit_breaker.record_success(domain)
             if hasattr(response, 'text'):
                 return response.text
             return response.body.decode('utf-8', errors='replace') if hasattr(response, 'body') else ""
-        except Exception as e:
-            self.circuit_breaker.record_failure(domain)
-            raise
+        except Exception:
+            # Fallback to urllib
+            try:
+                req = urllib.request.Request(url, headers={
+                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+                })
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
+                    return resp.read().decode('utf-8', errors='replace')
+            except Exception as e:
+                self.circuit_breaker.record_failure(domain)
+                raise
     
     def _download_file(self, url: str, filename: str = None) -> str | None:
         """Download file to workspace. Returns local path or None."""

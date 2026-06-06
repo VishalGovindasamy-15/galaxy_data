@@ -1,36 +1,39 @@
-"""Crawler pool - manages Scrapling fetcher instances."""
+"""Crawler pool - manages fetching using urllib + optional Scrapling."""
 import logging
+import urllib.request
 from typing import Any
 
 log = logging.getLogger("galaxy.collection")
 
-# Import Scrapling fetchers
-from scrapling.fetchers import Fetcher, AsyncFetcher
-
 
 class CrawlerPool:
-    """Manages Scrapling fetcher instances for HTTP and browser crawling."""
+    """Manages HTTP fetching. Uses urllib (always available)."""
     
     def __init__(self, http_pool_size: int = 10, timeout: int = 30):
         self.http_pool_size = http_pool_size
         self.timeout = timeout
-        self._fetcher = Fetcher(timeout=timeout, auto_match=False)
     
-    def fetch_sync(self, url: str, **kwargs) -> Any:
-        """Synchronous HTTP fetch using Scrapling's Fetcher."""
+    def fetch_sync(self, url: str, **kwargs) -> bytes:
+        """Synchronous HTTP fetch."""
         try:
-            response = self._fetcher.get(url, timeout=self.timeout, **kwargs)
-            log.debug(f"Fetched: {url} -> {response.status}")
-            return response
+            req = urllib.request.Request(url, headers={
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+            })
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                return resp.read()
         except Exception as e:
             log.error(f"Fetch failed: {url} -> {e}")
             raise
     
     def download_file(self, url: str, dest_path: str) -> bool:
         """Download a file from URL to disk."""
-        import urllib.request
         try:
-            urllib.request.urlretrieve(url, dest_path)
+            req = urllib.request.Request(url, headers={
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+            })
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                with open(dest_path, 'wb') as f:
+                    f.write(resp.read())
             log.info(f"Downloaded: {url} -> {dest_path}")
             return True
         except Exception as e:

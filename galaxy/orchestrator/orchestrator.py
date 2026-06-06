@@ -34,15 +34,24 @@ class Orchestrator:
         Config.ensure_dirs()
         self.source_registry = SourceRegistry()
         self.embeddings = EmbeddingStore()
-        self.rate_limiter = RateLimiter(default_rate=1.0)
+        self.rate_limiter = RateLimiter(default_rate=1.5)
         self.circuit_breaker = CircuitBreaker()
     
     def run(self, request: GatewayRequest, interactive: bool = False,
-            enable_web_extraction: bool = False) -> BuildResult:
-        """Execute the full pipeline."""
+            enable_web_extraction: bool = False,
+            max_results: int = 10, max_pages: int = 20) -> BuildResult:
+        """Execute the full pipeline.
+        
+        Args:
+            request: Gateway request with query
+            interactive: Interactive mode
+            enable_web_extraction: Auto-extract from web if no datasets found
+            max_results: Max datasets per source (controls collection size)
+            max_pages: Max pages to scan for web extraction
+        """
         session_id = request.session_id
         log.info(f"=== Galaxy Data Pipeline Started === Session: {session_id}")
-        log.info(f"Query: {request.query}")
+        log.info(f"Query: {request.query} | max_results={max_results} | max_pages={max_pages}")
         start_time = time.time()
         
         # 1. Create workspace
@@ -66,18 +75,19 @@ class Orchestrator:
         
         # 4. DISCOVER & COLLECT
         workspace.update_progress({"state": "collecting", "message": "Collecting datasets..."})
-        all_collected = self._collect(query, workspace, lineage)
+        all_collected = self._collect(query, workspace, lineage, max_results=max_results)
         
         log.info(f"Collection complete: {len(all_collected)} files from all sources")
         
-        # 5. WEB EXTRACTION (if no data found and approved)
-        if len(all_collected) == 0 and enable_web_extraction:
-            log.info("No datasets found. Activating web extraction...")
+        # 5. WEB EXTRACTION (if enabled — runs ALWAYS if --extract flag, not just when empty)
+        if enable_web_extraction:
+            log.info(f"Web extraction enabled. Scanning {max_pages} pages...")
             extraction_req = WebExtractionRequest(
                 session_id=session_id,
                 search_queries=query.search_queries,
-                max_pages=Config.WEB_EXTRACT_MAX_PAGES,
+                max_pages=max_pages,
                 user_approved=True,
+                extract_text=True,
             )
             extractor = WebExtractionAgent(str(workspace.raw_dir))
             extracted = extractor.extract(extraction_req)
@@ -85,8 +95,9 @@ class Orchestrator:
             for cf in extracted:
                 lineage.create(cf.path, cf.url, "web_extraction")
             log.info(f"Web extraction: {len(extracted)} files created")
-        elif len(all_collected) == 0:
-            log.warning("No datasets found and web extraction not enabled")
+        
+        if len(all_collected) == 0:
+            log.warning("No datasets found from any source")
         
         # 6. PROCESS
         metadata_store.update_session_state(session_id, SessionState.PROCESSING.value)
@@ -122,7 +133,7 @@ class Orchestrator:
         return result
     
     def _collect(self, query: StructuredQuery, workspace: SessionWorkspace,
-                 lineage: DatasetLineage) -> list[CollectedFile]:
+                 lineage: DatasetLineage, max_results: int = 10) -> list[CollectedFile]:
         """Run all spiders to collect datasets."""
         all_collected = []
         raw_dir = str(workspace.raw_dir)
@@ -148,7 +159,7 @@ class Orchestrator:
                     rate_limiter=self.rate_limiter,
                     circuit_breaker=self.circuit_breaker,
                 )
-                collected = spider.collect(search_query)
+                collected = spider.collect(search_query, max_results=max_results)
                 
                 # Register lineage
                 for cf in collected:

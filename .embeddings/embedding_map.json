@@ -4,5 +4,20 @@
   },
   "emb_a308f37a19": {
     "text": "sentiment analysis dataset"
+  },
+  "emb_8723b29fda": {
+    "text": "Indian spice varieties and health benefits"
+  },
+  "emb_6f6e9810f2": {
+    "text": "Indian spice varieties and health benefits"
+  },
+  "emb_5b1ef2f309": {
+    "text": "iris flower classification CSV"
+  },
+  "emb_efe0bbc5ac": {
+    "text": "face detection image dataset"
+  },
+  "emb_83adff2764": {
+    "text": "speech recognition audio wav dataset"
   }
 }

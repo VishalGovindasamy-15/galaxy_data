@@ -10,17 +10,20 @@ from galaxy.types import CollectedFile
 
 log = logging.getLogger("galaxy.spiders.huggingface")
 
+# File size limit per file
+MAX_FILE_SIZE = 100_000_000  # 100MB
+
 
 class HuggingFaceSpider(BaseCollector):
     """Collect datasets from HuggingFace Hub using their free API."""
     
     source_id = "huggingface"
     
-    def collect(self, query: str, max_results: int = 5) -> list[CollectedFile]:
+    def collect(self, query: str, max_results: int = 10, max_files_per_dataset: int = 5) -> list[CollectedFile]:
         """Search HuggingFace and download dataset files."""
-        log.info(f"HuggingFace: searching for '{query}'")
+        log.info(f"HuggingFace: searching for '{query}' (max={max_results})")
         
-        # Step 1: Search datasets via API (no auth needed)
+        # Search datasets via API (no auth needed) — get more results
         search_url = f"https://huggingface.co/api/datasets?search={urllib.parse.quote(query)}&limit={max_results}&sort=downloads"
         
         try:
@@ -35,15 +38,14 @@ class HuggingFaceSpider(BaseCollector):
         
         log.info(f"HuggingFace: found {len(datasets)} datasets")
         
-        # Step 2: For each dataset, try to download files
         for ds in datasets[:max_results]:
             ds_id = ds.get("id", "")
             if not ds_id:
                 continue
             
-            log.info(f"HuggingFace: processing dataset '{ds_id}'")
+            log.info(f"HuggingFace: processing '{ds_id}'")
             
-            # Try to get file listing
+            # Get file listing
             try:
                 tree_url = f"https://huggingface.co/api/datasets/{ds_id}/tree/main"
                 req = urllib.request.Request(tree_url, headers={
@@ -55,24 +57,30 @@ class HuggingFaceSpider(BaseCollector):
                 log.warning(f"HuggingFace: can't list files for {ds_id}: {e}")
                 continue
             
-            # Download data files (CSV, JSON, Parquet, TXT)
-            downloadable = [f for f in files if isinstance(f, dict) and 
-                           f.get("path", "").lower().endswith(('.csv', '.json', '.jsonl', '.parquet', '.tsv', '.txt'))
-                           and f.get("size", 0) < 50_000_000]  # <50MB limit
+            # Downloadable extensions (all data types)
+            DATA_EXTS = ('.csv', '.json', '.jsonl', '.parquet', '.tsv', '.txt',
+                         '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp',  # images
+                         '.mp3', '.wav', '.flac', '.ogg',                   # audio
+                         '.mp4', '.avi', '.mkv', '.webm',                   # video
+                         '.zip', '.tar.gz', '.gz')
+            
+            downloadable = [f for f in files if isinstance(f, dict) and
+                           any(f.get("path", "").lower().endswith(ext) for ext in DATA_EXTS)
+                           and f.get("size", 0) < MAX_FILE_SIZE
+                           and f.get("size", 0) > 50]
             
             if not downloadable:
-                # Try README at least for metadata
                 log.debug(f"No downloadable data files in {ds_id}")
                 continue
             
-            for file_info in downloadable[:3]:  # max 3 files per dataset
+            for file_info in downloadable[:max_files_per_dataset]:
                 fname = file_info["path"]
                 download_url = f"https://huggingface.co/datasets/{ds_id}/resolve/main/{fname}"
                 
                 safe_name = f"{ds_id.replace('/', '_')}_{Path(fname).name}"
                 local_path = self._download_file(download_url, safe_name)
                 
-                if local_path and Path(local_path).stat().st_size > 100:  # non-empty
+                if local_path and Path(local_path).stat().st_size > 50:
                     self._register_file(
                         local_path, download_url,
                         fmt=Path(fname).suffix.lstrip('.'),

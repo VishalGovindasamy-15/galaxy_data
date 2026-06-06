@@ -10,17 +10,24 @@ from galaxy.types import CollectedFile
 
 log = logging.getLogger("galaxy.spiders.github")
 
+# All data file extensions
+DATA_EXTS = ('.csv', '.json', '.jsonl', '.tsv', '.txt', '.parquet',
+             '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp',
+             '.mp3', '.wav', '.flac', '.ogg',
+             '.mp4', '.avi', '.mkv',
+             '.zip', '.tar.gz')
+
 
 class GitHubSpider(BaseCollector):
     """Collect datasets from GitHub using free API (no auth, rate limited)."""
     
     source_id = "github"
     
-    def collect(self, query: str, max_results: int = 5) -> list[CollectedFile]:
+    def collect(self, query: str, max_results: int = 10, max_files_per_repo: int = 5) -> list[CollectedFile]:
         """Search GitHub for repos with data files and download them."""
-        log.info(f"GitHub: searching for '{query}'")
+        log.info(f"GitHub: searching for '{query}' (max={max_results})")
         
-        # Search repos via API (no auth, 10 req/min)
+        # Search repos
         search_url = f"https://api.github.com/search/repositories?q={urllib.parse.quote(query + ' dataset')}&sort=stars&per_page={max_results}"
         
         try:
@@ -42,9 +49,8 @@ class GitHubSpider(BaseCollector):
             if not full_name:
                 continue
             
-            log.info(f"GitHub: scanning repo '{full_name}'")
+            log.info(f"GitHub: scanning '{full_name}'")
             
-            # Get repo tree to find data files
             try:
                 tree_url = f"https://api.github.com/repos/{full_name}/git/trees/HEAD?recursive=1"
                 req = urllib.request.Request(tree_url, headers={
@@ -59,17 +65,22 @@ class GitHubSpider(BaseCollector):
             
             tree = tree_data.get("tree", [])
             data_files = [f for f in tree
-                         if f.get("path", "").lower().endswith(('.csv', '.json', '.jsonl', '.tsv', '.txt'))
-                         and f.get("size", 0) < 10_000_000  # <10MB
-                         and f.get("size", 0) > 500]  # >500 bytes (not empty)
+                         if any(f.get("path", "").lower().endswith(ext) for ext in DATA_EXTS)
+                         and 0 < f.get("size", 0) < 50_000_000  # <50MB, non-empty
+                         and f.get("size", 0) > 200]
             
             if not data_files:
                 continue
             
-            for file_info in data_files[:3]:
+            # Sort by size descending (prefer larger files = more data)
+            data_files.sort(key=lambda f: f.get("size", 0), reverse=True)
+            
+            for file_info in data_files[:max_files_per_repo]:
                 fpath = file_info["path"]
-                raw_url = f"https://raw.githubusercontent.com/{full_name}/HEAD/{fpath}"
+                raw_url = f"https://raw.githubusercontent.com/{full_name}/HEAD/{urllib.parse.quote(fpath)}"
                 safe_name = f"{full_name.replace('/', '_')}_{Path(fpath).name}"
+                # Clean filename
+                safe_name = "".join(c for c in safe_name if c.isalnum() or c in ".-_")
                 
                 local_path = self._download_file(raw_url, safe_name)
                 

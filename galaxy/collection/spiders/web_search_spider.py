@@ -61,23 +61,24 @@ class WebSearchSpider(BaseCollector):
         return self.collected
     
     def _search_portal(self, url: str, found_urls: set):
-        """Search a data portal page for dataset download links using Scrapling."""
+        """Search a data portal page for dataset download links using lxml."""
         try:
-            from scrapling.fetchers import Fetcher
-            fetcher = Fetcher(timeout=20, auto_match=False)
-            page = fetcher.get(url, timeout=20)
+            from lxml import html as lxml_html
+            req = urllib.request.Request(url, headers={
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+            })
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                html_content = resp.read().decode('utf-8', errors='replace')
             
-            # Find all links that look like dataset files
-            if hasattr(page, 'find_all'):
-                links = page.find_all('a')
-                for link in links:
-                    href = link.attrib.get('href', '')
-                    if self.legal.is_dataset_url(href):
-                        if href.startswith('http'):
-                            found_urls.add(href)
-                        elif href.startswith('/'):
-                            parsed = urllib.parse.urlparse(url)
-                            found_urls.add(f"{parsed.scheme}://{parsed.netloc}{href}")
+            tree = lxml_html.fromstring(html_content)
+            links = tree.xpath('//a/@href')
+            for href in links:
+                if self.legal.is_dataset_url(href):
+                    if href.startswith('http'):
+                        found_urls.add(href)
+                    elif href.startswith('/'):
+                        parsed = urllib.parse.urlparse(url)
+                        found_urls.add(f"{parsed.scheme}://{parsed.netloc}{href}")
         except Exception as e:
             log.debug(f"Portal parse failed: {url}: {e}")
     
