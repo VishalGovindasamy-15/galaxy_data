@@ -1,0 +1,169 @@
+{
+  "generated_at": 1780753181.3342314,
+  "datasets_count": 18,
+  "avg_quality": 0.974,
+  "datasets": [
+    {
+      "name": "cleaned_Sp1786_multiclass-sentiment-analysis-dataset_test_df.csv",
+      "quality_score": 1.0,
+      "rows": 5206,
+      "columns": 4,
+      "format": "csv",
+      "source": "huggingface",
+      "license": "unknown"
+    },
+    {
+      "name": "cleaned_Sp1786_multiclass-sentiment-analysis-dataset_train_df.csv",
+      "quality_score": 1.0,
+      "rows": 31232,
+      "columns": 4,
+      "format": "csv",
+      "source": "huggingface",
+      "license": "unknown"
+    },
+    {
+      "name": "cleaned_Sp1786_multiclass-sentiment-analysis-dataset_val_df.csv",
+      "quality_score": 1.0,
+      "rows": 5205,
+      "columns": 4,
+      "format": "csv",
+      "source": "huggingface",
+      "license": "unknown"
+    },
+    {
+      "name": "cleaned_winvoker_turkish-sentiment-analysis-dataset_test.csv",
+      "quality_score": 1.0,
+      "rows": 48965,
+      "columns": 3,
+      "format": "csv",
+      "source": "huggingface",
+      "license": "unknown"
+    },
+    {
+      "name": "cleaned_md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_dev.csv",
+      "quality_score": 1.0,
+      "rows": 20000,
+      "columns": 2,
+      "format": "csv",
+      "source": "huggingface",
+      "license": "unknown"
+    },
+    {
+      "name": "cleaned_md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_test.csv",
+      "quality_score": 1.0,
+      "rows": 20000,
+      "columns": 2,
+      "format": "csv",
+      "source": "huggingface",
+      "license": "unknown"
+    },
+    {
+      "name": "cleaned_corollari_linusrants_data.json",
+      "quality_score": 1.0,
+      "rows": 312,
+      "columns": 2,
+      "format": "json",
+      "source": "github",
+      "license": "unknown"
+    },
+    {
+      "name": "cleaned_corollari_linusrants_2012rants.txt",
+      "quality_score": 1.0,
+      "rows": 108,
+      "columns": 1,
+      "format": "txt",
+      "source": "github",
+      "license": "unknown"
+    },
+    {
+      "name": "cleaned_corollari_linusrants_2013rants.txt",
+      "quality_score": 0.826,
+      "rows": 71,
+      "columns": 1,
+      "format": "txt",
+      "source": "github",
+      "license": "unknown"
+    },
+    {
+      "name": "cleaned_thuiar_MMSA_citations.json",
+      "quality_score": 0.9,
+      "rows": 1,
+      "columns": 2,
+      "format": "json",
+      "source": "github",
+      "license": "MIT"
+    },
+    {
+      "name": "cleaned_thuiar_MMSA_config_regression.json",
+      "quality_score": 0.9,
+      "rows": 1,
+      "columns": 21,
+      "format": "json",
+      "source": "github",
+      "license": "MIT"
+    },
+    {
+      "name": "cleaned_thuiar_MMSA_config_tune.json",
+      "quality_score": 0.9,
+      "rows": 1,
+      "columns": 19,
+      "format": "json",
+      "source": "github",
+      "license": "MIT"
+    },
+    {
+      "name": "cleaned_Meituan-Dianping_asap_dev.csv",
+      "quality_score": 1.0,
+      "rows": 4940,
+      "columns": 21,
+      "format": "csv",
+      "source": "github",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "cleaned_Meituan-Dianping_asap_dev_sample.csv",
+      "quality_score": 1.0,
+      "rows": 100,
+      "columns": 21,
+      "format": "csv",
+      "source": "github",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "cleaned_Meituan-Dianping_asap_test.csv",
+      "quality_score": 1.0,
+      "rows": 4940,
+      "columns": 21,
+      "format": "csv",
+      "source": "github",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "cleaned_slaysd_pytorch-sentiment-analysis-classification_dev.tsv",
+      "quality_score": 1.0,
+      "rows": 1065,
+      "columns": 2,
+      "format": "tsv",
+      "source": "github",
+      "license": "MIT"
+    },
+    {
+      "name": "cleaned_slaysd_pytorch-sentiment-analysis-classification_test.tsv",
+      "quality_score": 1.0,
+      "rows": 1067,
+      "columns": 2,
+      "format": "tsv",
+      "source": "github",
+      "license": "MIT"
+    },
+    {
+      "name": "cleaned_slaysd_pytorch-sentiment-analysis-classification_train.tsv",
+      "quality_score": 1.0,
+      "rows": 8527,
+      "columns": 2,
+      "format": "tsv",
+      "source": "github",
+      "license": "MIT"
+    }
+  ]
+}

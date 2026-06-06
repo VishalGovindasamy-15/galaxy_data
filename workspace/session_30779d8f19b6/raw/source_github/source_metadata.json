@@ -1,0 +1,91 @@
+{
+  "source_id": "github",
+  "collected_at": 1780753178.4668522,
+  "files_count": 12,
+  "files": [
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_data.json",
+      "url": "https://raw.githubusercontent.com/corollari/linusrants/HEAD/data.json",
+      "hash": "7cccfcd18c30b1c4dca9015403e0fa0ba1553194aac9cdae73089f302a66d5fc",
+      "size": 106733,
+      "format": "json"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_2012rants.txt",
+      "url": "https://raw.githubusercontent.com/corollari/linusrants/HEAD/original/2012rants.txt",
+      "hash": "574c832204addf2263965224e79e4b23e6e13d31346a02a1b69eff81c3e0c0a8",
+      "size": 33924,
+      "format": "txt"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_2013rants.txt",
+      "url": "https://raw.githubusercontent.com/corollari/linusrants/HEAD/original/2013rants.txt",
+      "hash": "149d16f19c78659208716c7dddb4e997a5f6066aa922d0ff0a978ce3371c30f9",
+      "size": 19181,
+      "format": "txt"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_citations.json",
+      "url": "https://raw.githubusercontent.com/thuiar/MMSA/HEAD/src/MMSA/config/citations.json",
+      "hash": "b2d6581da9d7593c7f3d8649ac77258d84e79f519f94b328faf42ba5ad09ae35",
+      "size": 6039,
+      "format": "json"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_config_regression.json",
+      "url": "https://raw.githubusercontent.com/thuiar/MMSA/HEAD/src/MMSA/config/config_regression.json",
+      "hash": "0676e57f973a8454c9e5fe293dffa22ae10bd6d8319bac9a9a0fe1495871110c",
+      "size": 45004,
+      "format": "json"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_config_tune.json",
+      "url": "https://raw.githubusercontent.com/thuiar/MMSA/HEAD/src/MMSA/config/config_tune.json",
+      "hash": "b0911eca6624ad0581a660b5f3e2e7e1a4040db52a3c8e04171849ec395b0c88",
+      "size": 29213,
+      "format": "json"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_dev.csv",
+      "url": "https://raw.githubusercontent.com/Meituan-Dianping/asap/HEAD/data/dev.csv",
+      "hash": "54efc8f6bc26d63a9f87e3418cd68e47f2eb13a19085e85abe63f3eafafe2b44",
+      "size": 4891291,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_dev_sample.csv",
+      "url": "https://raw.githubusercontent.com/Meituan-Dianping/asap/HEAD/data/dev_sample.csv",
+      "hash": "8cc713d952e20831f7d5314c6b0a0d5f68d062b73f883be18735363822ed5360",
+      "size": 99417,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_test.csv",
+      "url": "https://raw.githubusercontent.com/Meituan-Dianping/asap/HEAD/data/test.csv",
+      "hash": "217dd27c1d5699067952474e40824935d56ecf8b5047950d6da3d1222976a2bd",
+      "size": 4850010,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_dev.tsv",
+      "url": "https://raw.githubusercontent.com/slaysd/pytorch-sentiment-analysis-classification/HEAD/data/dev.tsv",
+      "hash": "b3f7f3c4dbd6dbf9435a6a5ee0a62783350a014f7a9fe36a16c8da7d8f9311bc",
+      "size": 128505,
+      "format": "tsv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_test.tsv",
+      "url": "https://raw.githubusercontent.com/slaysd/pytorch-sentiment-analysis-classification/HEAD/data/test.tsv",
+      "hash": "09f6e228915806f517fef59c3e0c934f80dfc01adeb43954b2e529240142e29e",
+      "size": 129501,
+      "format": "tsv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_train.tsv",
+      "url": "https://raw.githubusercontent.com/slaysd/pytorch-sentiment-analysis-classification/HEAD/data/train.tsv",
+      "hash": "fe26b60ad78ba0fbaacde8eb08c7d5d9947d506c114a7a4edc19bf6ef833254a",
+      "size": 1018873,
+      "format": "tsv"
+    }
+  ]
+}

@@ -1,0 +1,647 @@
+[
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_test_df.csv",
+    "action": "validated",
+    "timestamp": 1780753179.474238,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_test_df.csv",
+    "action": "schema_detected",
+    "timestamp": 1780753179.475573,
+    "details": {
+      "columns": 4
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_test_df.csv",
+    "action": "quality_scored",
+    "timestamp": 1780753179.4806533,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_test_df.csv",
+    "action": "cleaned",
+    "timestamp": 1780753179.4930346,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_Sp1786_multiclass-sentiment-analysis-dataset_test_df.csv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_train_df.csv",
+    "action": "validated",
+    "timestamp": 1780753179.510799,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_train_df.csv",
+    "action": "schema_detected",
+    "timestamp": 1780753179.5137515,
+    "details": {
+      "columns": 4
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_train_df.csv",
+    "action": "quality_scored",
+    "timestamp": 1780753179.545372,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_train_df.csv",
+    "action": "cleaned",
+    "timestamp": 1780753179.6259925,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_Sp1786_multiclass-sentiment-analysis-dataset_train_df.csv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_val_df.csv",
+    "action": "validated",
+    "timestamp": 1780753179.629352,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_val_df.csv",
+    "action": "schema_detected",
+    "timestamp": 1780753179.630356,
+    "details": {
+      "columns": 4
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_val_df.csv",
+    "action": "quality_scored",
+    "timestamp": 1780753179.634059,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_val_df.csv",
+    "action": "cleaned",
+    "timestamp": 1780753179.6527731,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_Sp1786_multiclass-sentiment-analysis-dataset_val_df.csv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/winvoker_turkish-sentiment-analysis-dataset_test.csv",
+    "action": "validated",
+    "timestamp": 1780753179.7027836,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/winvoker_turkish-sentiment-analysis-dataset_test.csv",
+    "action": "schema_detected",
+    "timestamp": 1780753179.7090983,
+    "details": {
+      "columns": 3
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/winvoker_turkish-sentiment-analysis-dataset_test.csv",
+    "action": "quality_scored",
+    "timestamp": 1780753179.7705224,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/winvoker_turkish-sentiment-analysis-dataset_test.csv",
+    "action": "cleaned",
+    "timestamp": 1780753179.988977,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_winvoker_turkish-sentiment-analysis-dataset_test.csv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_dev.csv",
+    "action": "validated",
+    "timestamp": 1780753180.0519571,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_dev.csv",
+    "action": "schema_detected",
+    "timestamp": 1780753180.0661418,
+    "details": {
+      "columns": 2
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_dev.csv",
+    "action": "quality_scored",
+    "timestamp": 1780753180.1342103,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_dev.csv",
+    "action": "cleaned",
+    "timestamp": 1780753180.4143088,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_dev.csv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_test.csv",
+    "action": "validated",
+    "timestamp": 1780753180.4774308,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_test.csv",
+    "action": "schema_detected",
+    "timestamp": 1780753180.4912124,
+    "details": {
+      "columns": 2
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_test.csv",
+    "action": "quality_scored",
+    "timestamp": 1780753180.558632,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_test.csv",
+    "action": "cleaned",
+    "timestamp": 1780753180.8317144,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_test.csv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Ajain1391_multiclass-sentiment-analysis-dataset_test_df.csv",
+    "action": "validated",
+    "timestamp": 1780753180.8350027,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Ajain1391_multiclass-sentiment-analysis-dataset_test_df.csv",
+    "action": "skipped",
+    "timestamp": 1780753180.8355305,
+    "details": {
+      "reason": "duplicate"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Ajain1391_multiclass-sentiment-analysis-dataset_train_df.csv",
+    "action": "validated",
+    "timestamp": 1780753180.8532712,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Ajain1391_multiclass-sentiment-analysis-dataset_train_df.csv",
+    "action": "skipped",
+    "timestamp": 1780753180.8556786,
+    "details": {
+      "reason": "duplicate"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Ajain1391_multiclass-sentiment-analysis-dataset_val_df.csv",
+    "action": "validated",
+    "timestamp": 1780753180.8588207,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Ajain1391_multiclass-sentiment-analysis-dataset_val_df.csv",
+    "action": "skipped",
+    "timestamp": 1780753180.8593,
+    "details": {
+      "reason": "duplicate"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_data.json",
+    "action": "validated",
+    "timestamp": 1780753180.859665,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_data.json",
+    "action": "schema_detected",
+    "timestamp": 1780753180.860472,
+    "details": {
+      "columns": 2
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_data.json",
+    "action": "quality_scored",
+    "timestamp": 1780753180.8608282,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_data.json",
+    "action": "cleaned",
+    "timestamp": 1780753180.8628297,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_corollari_linusrants_data.json"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_2012rants.txt",
+    "action": "validated",
+    "timestamp": 1780753180.8629954,
+    "details": {
+      "valid": true,
+      "type": "document"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_2012rants.txt",
+    "action": "schema_detected",
+    "timestamp": 1780753180.8630917,
+    "details": {
+      "columns": 1
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_2012rants.txt",
+    "action": "quality_scored",
+    "timestamp": 1780753180.8631527,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_2012rants.txt",
+    "action": "cleaned",
+    "timestamp": 1780753180.8635557,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_corollari_linusrants_2012rants.txt"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_2013rants.txt",
+    "action": "validated",
+    "timestamp": 1780753180.8638265,
+    "details": {
+      "valid": true,
+      "type": "document"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_2013rants.txt",
+    "action": "schema_detected",
+    "timestamp": 1780753180.8639863,
+    "details": {
+      "columns": 1
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_2013rants.txt",
+    "action": "quality_scored",
+    "timestamp": 1780753180.8640962,
+    "details": {
+      "score": 0.826
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/corollari_linusrants_2013rants.txt",
+    "action": "cleaned",
+    "timestamp": 1780753180.8643637,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_corollari_linusrants_2013rants.txt"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_citations.json",
+    "action": "validated",
+    "timestamp": 1780753180.8644977,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_citations.json",
+    "action": "schema_detected",
+    "timestamp": 1780753180.8646536,
+    "details": {
+      "columns": 2
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_citations.json",
+    "action": "quality_scored",
+    "timestamp": 1780753180.864716,
+    "details": {
+      "score": 0.9
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_citations.json",
+    "action": "cleaned",
+    "timestamp": 1780753180.8649628,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_thuiar_MMSA_citations.json"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_config_regression.json",
+    "action": "validated",
+    "timestamp": 1780753180.865319,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_config_regression.json",
+    "action": "schema_detected",
+    "timestamp": 1780753180.8661702,
+    "details": {
+      "columns": 21
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_config_regression.json",
+    "action": "quality_scored",
+    "timestamp": 1780753180.8664641,
+    "details": {
+      "score": 0.9
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_config_regression.json",
+    "action": "cleaned",
+    "timestamp": 1780753180.868229,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_thuiar_MMSA_config_regression.json"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_config_tune.json",
+    "action": "validated",
+    "timestamp": 1780753180.86856,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_config_tune.json",
+    "action": "schema_detected",
+    "timestamp": 1780753180.8692408,
+    "details": {
+      "columns": 19
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_config_tune.json",
+    "action": "quality_scored",
+    "timestamp": 1780753180.8695025,
+    "details": {
+      "score": 0.9
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/thuiar_MMSA_config_tune.json",
+    "action": "cleaned",
+    "timestamp": 1780753180.8710911,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_thuiar_MMSA_config_tune.json"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_dev.csv",
+    "action": "validated",
+    "timestamp": 1780753180.8831935,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_dev.csv",
+    "action": "schema_detected",
+    "timestamp": 1780753180.8875208,
+    "details": {
+      "columns": 21
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_dev.csv",
+    "action": "quality_scored",
+    "timestamp": 1780753180.9036827,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_dev.csv",
+    "action": "cleaned",
+    "timestamp": 1780753180.969815,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_Meituan-Dianping_asap_dev.csv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_dev_sample.csv",
+    "action": "validated",
+    "timestamp": 1780753180.970566,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_dev_sample.csv",
+    "action": "schema_detected",
+    "timestamp": 1780753180.9724724,
+    "details": {
+      "columns": 21
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_dev_sample.csv",
+    "action": "quality_scored",
+    "timestamp": 1780753180.9729865,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_dev_sample.csv",
+    "action": "cleaned",
+    "timestamp": 1780753180.9750602,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_Meituan-Dianping_asap_dev_sample.csv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_test.csv",
+    "action": "validated",
+    "timestamp": 1780753180.987038,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_test.csv",
+    "action": "schema_detected",
+    "timestamp": 1780753180.9914017,
+    "details": {
+      "columns": 21
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_test.csv",
+    "action": "quality_scored",
+    "timestamp": 1780753181.012748,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/Meituan-Dianping_asap_test.csv",
+    "action": "cleaned",
+    "timestamp": 1780753181.0648134,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_Meituan-Dianping_asap_test.csv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_dev.tsv",
+    "action": "validated",
+    "timestamp": 1780753181.0655644,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_dev.tsv",
+    "action": "schema_detected",
+    "timestamp": 1780753181.0661612,
+    "details": {
+      "columns": 2
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_dev.tsv",
+    "action": "quality_scored",
+    "timestamp": 1780753181.0667715,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_dev.tsv",
+    "action": "cleaned",
+    "timestamp": 1780753181.0691576,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_slaysd_pytorch-sentiment-analysis-classification_dev.tsv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_test.tsv",
+    "action": "validated",
+    "timestamp": 1780753181.0697412,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_test.tsv",
+    "action": "schema_detected",
+    "timestamp": 1780753181.0703058,
+    "details": {
+      "columns": 2
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_test.tsv",
+    "action": "quality_scored",
+    "timestamp": 1780753181.0709214,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_test.tsv",
+    "action": "cleaned",
+    "timestamp": 1780753181.0733063,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_slaysd_pytorch-sentiment-analysis-classification_test.tsv"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_train.tsv",
+    "action": "validated",
+    "timestamp": 1780753181.0768857,
+    "details": {
+      "valid": true,
+      "type": "tabular"
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_train.tsv",
+    "action": "schema_detected",
+    "timestamp": 1780753181.0780098,
+    "details": {
+      "columns": 2
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_train.tsv",
+    "action": "quality_scored",
+    "timestamp": 1780753181.0825107,
+    "details": {
+      "score": 1.0
+    }
+  },
+  {
+    "dataset": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_github/slaysd_pytorch-sentiment-analysis-classification_train.tsv",
+    "action": "cleaned",
+    "timestamp": 1780753181.099905,
+    "details": {
+      "output": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/processed/cleaned_slaysd_pytorch-sentiment-analysis-classification_train.tsv"
+    }
+  }
+]

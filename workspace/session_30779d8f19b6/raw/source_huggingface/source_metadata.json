@@ -1,0 +1,70 @@
+{
+  "source_id": "huggingface",
+  "collected_at": 1780753161.3745527,
+  "files_count": 9,
+  "files": [
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_test_df.csv",
+      "url": "https://huggingface.co/datasets/Sp1786/multiclass-sentiment-analysis-dataset/resolve/main/test_df.csv",
+      "hash": "7252897acd504b27d49cdb84651623f2d9326659599081fdf6cd114224ccfc2c",
+      "size": 585991,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_train_df.csv",
+      "url": "https://huggingface.co/datasets/Sp1786/multiclass-sentiment-analysis-dataset/resolve/main/train_df.csv",
+      "hash": "58e1f1c8a9158f5aa015d700f61d67540674aad2495490d9580efa0b596a53ce",
+      "size": 3555178,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Sp1786_multiclass-sentiment-analysis-dataset_val_df.csv",
+      "url": "https://huggingface.co/datasets/Sp1786/multiclass-sentiment-analysis-dataset/resolve/main/val_df.csv",
+      "hash": "b7130ffb2c09d05e2cff9b01d09a0f74b6c127cac182d2b50c6f79ee5b08fcf6",
+      "size": 600751,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/winvoker_turkish-sentiment-analysis-dataset_test.csv",
+      "url": "https://huggingface.co/datasets/winvoker/turkish-sentiment-analysis-dataset/resolve/main/test.csv",
+      "hash": "d3b72254ca956631081ecd60c847e2552615c56765216ee0ca31d72095172194",
+      "size": 8471409,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_dev.csv",
+      "url": "https://huggingface.co/datasets/md-nishat-008/Code-Mixed-Sentiment-Analysis-Dataset/resolve/main/dev.csv",
+      "hash": "7aade77a0bdef9e7002a65f094885df2b069acf3dc91bfc077c2d844a49f5f14",
+      "size": 20632694,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/md-nishat-008_Code-Mixed-Sentiment-Analysis-Dataset_test.csv",
+      "url": "https://huggingface.co/datasets/md-nishat-008/Code-Mixed-Sentiment-Analysis-Dataset/resolve/main/test.csv",
+      "hash": "7331244aaa4d114da59870f06655509b3982cae1cd9b6b864f2d1b91722863be",
+      "size": 20739768,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Ajain1391_multiclass-sentiment-analysis-dataset_test_df.csv",
+      "url": "https://huggingface.co/datasets/Ajain1391/multiclass-sentiment-analysis-dataset/resolve/main/test_df.csv",
+      "hash": "7252897acd504b27d49cdb84651623f2d9326659599081fdf6cd114224ccfc2c",
+      "size": 585991,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Ajain1391_multiclass-sentiment-analysis-dataset_train_df.csv",
+      "url": "https://huggingface.co/datasets/Ajain1391/multiclass-sentiment-analysis-dataset/resolve/main/train_df.csv",
+      "hash": "58e1f1c8a9158f5aa015d700f61d67540674aad2495490d9580efa0b596a53ce",
+      "size": 3555178,
+      "format": "csv"
+    },
+    {
+      "path": "/mnt/78CA356BCA352732/Galaxy Data/galaxy_data/workspace/session_30779d8f19b6/raw/source_huggingface/Ajain1391_multiclass-sentiment-analysis-dataset_val_df.csv",
+      "url": "https://huggingface.co/datasets/Ajain1391/multiclass-sentiment-analysis-dataset/resolve/main/val_df.csv",
+      "hash": "b7130ffb2c09d05e2cff9b01d09a0f74b6c127cac182d2b50c6f79ee5b08fcf6",
+      "size": 600751,
+      "format": "csv"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "galaxy-data"
+version = "0.1.0"
+description = "Galaxy Data - Dataset Intelligence Platform"
+requires-python = ">=3.10"
+dependencies = [
+    # Scrapling core deps
+    "lxml>=6.1.0",
+    "cssselect>=1.4.0",
+    "orjson>=3.11.8",
+    "tld>=0.13.2",
+    "w3lib>=2.4.1",
+    "typing_extensions",
+    # Scrapling fetcher deps
+    "curl_cffi>=0.15.0",
+    "anyio>=4.13.0",
+    "protego>=0.6.0",
+    "browserforge>=1.2.4",
+    "msgspec>=0.21.1",
+    # Galaxy Data deps
+    "fakeredis>=2.23.0",
+    "aiosqlite>=0.20.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "faiss-cpu>=1.8.0",
+    "aiofiles>=24.1.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["galaxy*", "scrapling*"]
