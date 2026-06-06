@@ -1,4 +1,0 @@
-Source: github | License: Apache-2.0
-Source: github | License: MIT
-Source: github | License: unknown
-Source: huggingface | License: unknown

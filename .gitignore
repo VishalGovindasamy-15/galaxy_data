@@ -1,2 +1,42 @@
-.venv
-/workspace
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# Database
+*.db
+*.sqlite3
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Galaxy Data generated files
+workspace/
+store/
+
+# Cache
+.cache/
+.pytest_cache/
+.mypy_cache/
+
+# OS files
+.DS_Store
+Thumbs.db
