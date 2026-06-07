@@ -1,61 +1,73 @@
-"""Search engine spider — uses DuckDuckGo to find datasets across the entire internet."""
+"""Search engine spider — uses Scrapling StealthyFetcher to search the entire internet.
+Uses headless Chrome to bypass anti-bot protections and search DuckDuckGo/Google."""
 import json
 import logging
 import re
 import time
-import urllib.request
 import urllib.parse
+import urllib.request
 from pathlib import Path
-from lxml import html as lxml_html
 
 from galaxy.collection.spiders.base_spider import BaseCollector
 from galaxy.types import CollectedFile
 
 log = logging.getLogger("galaxy.spiders.search")
 
-# DuckDuckGo HTML search (no API key, no auth, free)
-DUCKDUCKGO_URL = "https://html.duckduckgo.com/html/"
+# Data file extensions we look for
+DATA_EXTS = {'.csv', '.tsv', '.json', '.jsonl', '.parquet', '.txt', '.xlsx',
+             '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp',
+             '.mp3', '.wav', '.flac', '.ogg',
+             '.mp4', '.avi', '.mkv', '.zip', '.tar.gz', '.gz'}
+
+# Try loading StealthyFetcher
+try:
+    from scrapling import StealthyFetcher, Fetcher
+    STEALTH_AVAILABLE = True
+except ImportError:
+    STEALTH_AVAILABLE = False
 
 
 class SearchEngineSpider(BaseCollector):
-    """Search the entire internet for datasets using DuckDuckGo.
-    Discovers new sources dynamically — not limited to fixed sources."""
+    """Search the ENTIRE internet for datasets using StealthyFetcher + DuckDuckGo.
+    Uses headless Chrome to get real search results, then crawls found pages."""
     
     source_id = "search_engine"
     
     def collect(self, query: str, max_results: int = 10, max_pages: int = 3) -> list[CollectedFile]:
-        """Search DuckDuckGo for data files across the internet."""
+        """Search the internet for data files."""
         log.info(f"SearchEngine: searching internet for '{query}' (max={max_results})")
         
-        # Multiple search variations to find more data
+        if not STEALTH_AVAILABLE:
+            log.warning("SearchEngine: StealthyFetcher not available, using urllib fallback")
+            return self._fallback_collect(query, max_results)
+        
+        # Search DuckDuckGo with multiple queries
         search_variations = [
-            f"{query} filetype:csv download",
-            f"{query} dataset download",
-            f"{query} data filetype:json",
-            f"{query} open data",
+            f"{query} dataset download filetype:csv",
+            f"{query} dataset filetype:json",
+            f"{query} open data download",
+            f"{query} data repository",
         ]
         
         all_urls = set()
-        
         for variation in search_variations:
             try:
-                urls = self._search_ddg(variation, max_pages=max_pages)
+                urls = self._search_duckduckgo(variation)
                 all_urls.update(urls)
-                log.info(f"SearchEngine: DDG found {len(urls)} results for '{variation}'")
-                time.sleep(1)  # respect rate limits
+                log.info(f"SearchEngine: found {len(urls)} results for '{variation}'")
+                time.sleep(1)
             except Exception as e:
-                log.warning(f"DDG search failed: {e}")
+                log.warning(f"Search failed for '{variation}': {e}")
         
         log.info(f"SearchEngine: {len(all_urls)} unique URLs to scan")
         
-        # Crawl each result page for downloadable data
+        # Crawl each result page for data files
         downloaded = 0
         for url in list(all_urls):
             if downloaded >= max_results:
                 break
-            
             try:
-                new = self._scan_page_for_data(url)
+                new = self._scan_page(url)
                 downloaded += new
             except Exception as e:
                 log.debug(f"Page scan failed: {url}: {e}")
@@ -64,83 +76,81 @@ class SearchEngineSpider(BaseCollector):
         log.info(f"SearchEngine: collected {len(self.collected)} files")
         return self.collected
     
-    def _search_ddg(self, query: str, max_pages: int = 2) -> list[str]:
-        """Search DuckDuckGo HTML and extract result URLs."""
+    def _search_duckduckgo(self, query: str) -> list[str]:
+        """Search DuckDuckGo using StealthyFetcher (headless Chrome)."""
         urls = []
+        search_url = f"https://duckduckgo.com/?q={urllib.parse.quote(query)}&ia=web"
         
-        for page in range(max_pages):
-            try:
-                data = urllib.parse.urlencode({
-                    'q': query,
-                    's': str(page * 30),
-                    'dc': str(page * 30 + 1),
-                    'v': 'l',
-                    'o': 'json',
-                    'api': 'd.js',
-                }).encode()
-                
-                req = urllib.request.Request(DUCKDUCKGO_URL, data=data, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0',
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Referer': 'https://html.duckduckgo.com/',
-                })
-                
-                with urllib.request.urlopen(req, timeout=15) as resp:
-                    html_content = resp.read().decode('utf-8', errors='replace')
-                
-                tree = lxml_html.fromstring(html_content)
-                
-                # Extract result links
-                result_links = tree.xpath('//a[@class="result__a"]/@href')
-                for link in result_links:
-                    # DDG wraps URLs in redirect — extract real URL
-                    real_url = self._extract_real_url(link)
-                    if real_url and real_url.startswith('http'):
-                        urls.append(real_url)
-                
-                # Also try alternate selectors
-                if not result_links:
-                    all_links = tree.xpath('//a/@href')
-                    for link in all_links:
-                        if link.startswith('http') and 'duckduckgo' not in link:
-                            urls.append(link)
-                
-                time.sleep(0.5)
-            except Exception as e:
-                log.debug(f"DDG page {page} failed: {e}")
+        try:
+            resp = StealthyFetcher.fetch(
+                search_url,
+                headless=True,
+                disable_resources=True,
+                block_ads=True,
+                network_idle=True,
+                timeout=20000,
+            )
+            
+            if resp.status != 200:
+                log.warning(f"DDG returned {resp.status}")
+                return urls
+            
+            # Extract result links using Scrapling CSS selectors
+            result_links = resp.css('a.result__a') or resp.css('a[data-testid="result-title-a"]')
+            for link in result_links:
+                href = link.attrib.get('href', '')
+                if href and href.startswith('http') and 'duckduckgo' not in href:
+                    urls.append(href)
+            
+            # Also try extracting from all links if CSS selectors don't match
+            if not urls:
+                all_links = resp.css('a[href]')
+                for link in all_links:
+                    href = link.attrib.get('href', '')
+                    # DDG redirect URLs
+                    if '//duckduckgo.com/l/?' in href:
+                        real = self._extract_ddg_url(href)
+                        if real:
+                            urls.append(real)
+                    elif href.startswith('http') and 'duckduckgo' not in href:
+                        urls.append(href)
+            
+            log.info(f"DDG: extracted {len(urls)} result URLs")
+        except Exception as e:
+            log.warning(f"DDG StealthyFetcher error: {e}")
         
         return urls
     
-    def _extract_real_url(self, ddg_url: str) -> str:
+    def _extract_ddg_url(self, ddg_url: str) -> str | None:
         """Extract real URL from DuckDuckGo redirect."""
-        if ddg_url.startswith('//duckduckgo.com/l/?uddg='):
+        try:
             parsed = urllib.parse.urlparse(ddg_url)
             params = urllib.parse.parse_qs(parsed.query)
             if 'uddg' in params:
                 return urllib.parse.unquote(params['uddg'][0])
-        elif ddg_url.startswith('http'):
-            return ddg_url
-        return ddg_url
+        except Exception:
+            pass
+        return None
     
-    def _scan_page_for_data(self, url: str) -> int:
-        """Scan a web page for downloadable data files. Returns count downloaded."""
+    def _scan_page(self, url: str) -> int:
+        """Scan a web page for downloadable data files using Scrapling Fetcher."""
         downloaded = 0
         
         try:
-            html_content = self._fetch_page(url)
-            if not html_content:
+            # Use Fetcher (not Stealth) for regular page crawling — faster
+            resp = Fetcher.get(url, timeout=15)
+            if resp.status != 200:
                 return 0
             
-            tree = lxml_html.fromstring(html_content)
-            links = tree.xpath('//a/@href')
-            
-            for href in links:
+            # Find all links using Scrapling selectors
+            links = resp.css('a[href]')
+            for link in links:
+                href = link.attrib.get('href', '')
                 if not href:
                     continue
                 
                 full_url = urllib.parse.urljoin(url, href)
                 
-                # Check if it's a data file
                 if self._is_data_url(full_url):
                     parsed = urllib.parse.urlparse(full_url)
                     filename = Path(parsed.path).name
@@ -156,23 +166,39 @@ class SearchEngineSpider(BaseCollector):
         
         return downloaded
     
-    def _fetch_page(self, url: str) -> str | None:
-        """Fetch a web page."""
-        try:
-            req = urllib.request.Request(url, headers={
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-            })
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                return resp.read().decode('utf-8', errors='replace')
-        except Exception:
-            return None
-    
     def _is_data_url(self, url: str) -> bool:
         """Check if URL points to a data file."""
         lower = url.lower()
-        data_exts = ('.csv', '.tsv', '.json', '.jsonl', '.parquet', '.txt',
-                     '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp',
-                     '.mp3', '.wav', '.flac', '.ogg',
-                     '.mp4', '.avi', '.mkv',
-                     '.zip', '.tar.gz', '.gz', '.xlsx')
-        return any(lower.endswith(ext) for ext in data_exts)
+        return any(lower.endswith(ext) for ext in DATA_EXTS)
+    
+    def _fallback_collect(self, query: str, max_results: int) -> list[CollectedFile]:
+        """Fallback: use urllib + lxml for DuckDuckGo HTML search."""
+        try:
+            from lxml import html as lxml_html
+            
+            data = urllib.parse.urlencode({'q': query + ' dataset download'}).encode()
+            req = urllib.request.Request(
+                'https://html.duckduckgo.com/html/', data=data,
+                headers={
+                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                html_content = resp.read().decode('utf-8', errors='replace')
+            
+            tree = lxml_html.fromstring(html_content)
+            result_links = tree.xpath('//a[@class="result__a"]/@href')
+            
+            for href in result_links[:max_results]:
+                real_url = self._extract_ddg_url(href) if '//duckduckgo.com' in href else href
+                if real_url and self._is_data_url(real_url):
+                    filename = Path(urllib.parse.urlparse(real_url).path).name
+                    safe = "".join(c for c in filename if c.isalnum() or c in ".-_")
+                    local_path = self._download_file(real_url, safe)
+                    if local_path:
+                        self._register_file(local_path, real_url)
+        except Exception as e:
+            log.warning(f"Fallback search failed: {e}")
+        
+        return self.collected

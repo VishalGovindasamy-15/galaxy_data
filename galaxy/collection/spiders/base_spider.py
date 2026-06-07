@@ -1,4 +1,4 @@
-"""Base spider - common collection logic."""
+"""Base spider — common collection logic using Scrapling Fetcher."""
 import os
 import json
 import time
@@ -16,9 +16,18 @@ from galaxy.collection.legal_checker import LegalChecker
 
 log = logging.getLogger("galaxy.spiders")
 
+# Import Scrapling Fetcher at module level
+try:
+    from scrapling import Fetcher
+    SCRAPLING_AVAILABLE = True
+    log.debug("Scrapling Fetcher loaded")
+except ImportError:
+    SCRAPLING_AVAILABLE = False
+    log.debug("Scrapling not available, using urllib fallback")
+
 
 class BaseCollector:
-    """Base class for all data collectors."""
+    """Base class for all data collectors. Uses Scrapling Fetcher for smart HTTP."""
     
     source_id: str = "base"
     
@@ -33,78 +42,87 @@ class BaseCollector:
         self._source_dir.mkdir(parents=True, exist_ok=True)
     
     def _fetch_url(self, url: str, timeout: int = 30) -> bytes:
-        """Fetch URL content. Tries Scrapling first, falls back to urllib."""
+        """Fetch URL content using Scrapling Fetcher with urllib fallback."""
         domain = urllib.parse.urlparse(url).netloc
         if not self.circuit_breaker.can_request(domain):
             raise ConnectionError(f"Circuit open for {domain}")
         self.rate_limiter.acquire_sync(domain)
         
-        try:
-            from scrapling.fetchers import Fetcher
-            fetcher = Fetcher(timeout=timeout, auto_match=False)
-            response = fetcher.get(url, timeout=timeout)
-            self.circuit_breaker.record_success(domain)
-            return response.body if hasattr(response, 'body') else b""
-        except Exception:
-            # Fallback to urllib
+        if SCRAPLING_AVAILABLE:
             try:
-                req = urllib.request.Request(url, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                })
-                with urllib.request.urlopen(req, timeout=timeout) as resp:
-                    data = resp.read()
+                response = Fetcher.get(url, timeout=timeout)
                 self.circuit_breaker.record_success(domain)
-                return data
+                return response.body
             except Exception as e:
-                self.circuit_breaker.record_failure(domain)
-                raise
+                log.debug(f"Scrapling Fetcher failed for {url}: {e}, trying urllib")
+        
+        # Fallback to urllib
+        try:
+            req = urllib.request.Request(url, headers={
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0'
+            })
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                data = resp.read()
+            self.circuit_breaker.record_success(domain)
+            return data
+        except Exception as e:
+            self.circuit_breaker.record_failure(domain)
+            raise
     
-    def _fetch_text(self, url: str, timeout: int = 30) -> str:
-        """Fetch URL text. Tries Scrapling first, falls back to urllib."""
+    def _fetch_parsed(self, url: str, timeout: int = 30):
+        """Fetch URL and return Scrapling Response (parsed DOM). Falls back to None."""
         domain = urllib.parse.urlparse(url).netloc
         self.rate_limiter.acquire_sync(domain)
-        try:
-            from scrapling.fetchers import Fetcher
-            fetcher = Fetcher(timeout=timeout, auto_match=False)
-            response = fetcher.get(url, timeout=timeout)
-            self.circuit_breaker.record_success(domain)
-            if hasattr(response, 'text'):
-                return response.text
-            return response.body.decode('utf-8', errors='replace') if hasattr(response, 'body') else ""
-        except Exception:
-            # Fallback to urllib
+        
+        if SCRAPLING_AVAILABLE:
             try:
-                req = urllib.request.Request(url, headers={
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-                })
-                with urllib.request.urlopen(req, timeout=timeout) as resp:
-                    return resp.read().decode('utf-8', errors='replace')
+                response = Fetcher.get(url, timeout=timeout)
+                self.circuit_breaker.record_success(domain)
+                return response  # Scrapling Response with CSS/XPath selectors
             except Exception as e:
-                self.circuit_breaker.record_failure(domain)
-                raise
+                log.debug(f"Scrapling parse failed for {url}: {e}")
+        
+        return None
+    
+    def _fetch_text(self, url: str, timeout: int = 30) -> str:
+        """Fetch URL text using Scrapling with urllib fallback."""
+        domain = urllib.parse.urlparse(url).netloc
+        self.rate_limiter.acquire_sync(domain)
+        
+        if SCRAPLING_AVAILABLE:
+            try:
+                response = Fetcher.get(url, timeout=timeout)
+                self.circuit_breaker.record_success(domain)
+                return response.body.decode('utf-8', errors='replace')
+            except Exception as e:
+                log.debug(f"Scrapling text failed for {url}: {e}, trying urllib")
+        
+        try:
+            req = urllib.request.Request(url, headers={
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+            })
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read().decode('utf-8', errors='replace')
+        except Exception as e:
+            self.circuit_breaker.record_failure(domain)
+            raise
     
     def _download_file(self, url: str, filename: str = None) -> str | None:
-        """Download file to workspace. Returns local path or None."""
+        """Download file to workspace using Scrapling. Returns local path or None."""
         if not filename:
             parsed = urllib.parse.urlparse(url)
             filename = Path(parsed.path).name or "data.bin"
-            # Clean filename
             filename = "".join(c for c in filename if c.isalnum() or c in ".-_")
             if not filename:
                 filename = f"file_{hash(url) % 100000}"
         
         dest = self._source_dir / filename
         if dest.exists():
-            log.debug(f"Already exists: {dest}")
             return str(dest)
         
         try:
-            req = urllib.request.Request(url, headers={
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
-            })
-            with urllib.request.urlopen(req, timeout=60) as resp:
-                data = resp.read()
-                dest.write_bytes(data)
+            data = self._fetch_url(url, timeout=60)
+            dest.write_bytes(data)
             log.info(f"Downloaded: {url} -> {dest.name} ({len(data)} bytes)")
             return str(dest)
         except Exception as e:
@@ -138,6 +156,6 @@ class BaseCollector:
         }
         (self._source_dir / "source_metadata.json").write_text(json.dumps(meta, indent=2))
     
-    def collect(self, query: str) -> list[CollectedFile]:
-        """Override in subclass. Collect datasets matching query."""
+    def collect(self, query: str, max_results: int = 10) -> list[CollectedFile]:
+        """Override in subclass."""
         raise NotImplementedError

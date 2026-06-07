@@ -40,5 +40,11 @@
   },
   "emb_865973f77d": {
     "text": "sentiment analysis NLP text classification"
+  },
+  "emb_9dd915d16d": {
+    "text": "flower classification images dataset"
+  },
+  "emb_25e18c4d24": {
+    "text": "weather temperature forecast dataset"
   }
 }
