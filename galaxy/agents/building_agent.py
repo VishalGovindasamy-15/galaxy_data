@@ -1,79 +1,92 @@
-"""Building agent - packages final output with README, reports, lineage."""
-import csv
+"""Building agent — packages final datasets into organized, type-separated output."""
 import json
+import shutil
 import time
 import logging
-import shutil
 from pathlib import Path
-from galaxy.types import DatasetInfo, BuildResult, ProcessingResult
-from galaxy.processing.merger import merge_csv_files, merge_json_files
+from galaxy.types import DatasetInfo, DataType, BuildResult
 
 log = logging.getLogger("galaxy.agents")
 
 
 class BuildingAgent:
-    """Package processed datasets into final deliverable."""
+    """Packages processed datasets into final deliverable with typed folders."""
     
     def __init__(self, workspace_path: str):
         self.workspace = Path(workspace_path)
         self.final_dir = self.workspace / "final"
-        self.final_dir.mkdir(parents=True, exist_ok=True)
+        self.processed_dir = self.workspace / "processed"
     
-    def build(self, session_id: str, datasets: list[DatasetInfo], query: str = "",
-              merge: bool = False) -> BuildResult:
-        """Build final package."""
+    def build(self, session_id: str, datasets: list[DatasetInfo],
+              query: str = "", merge: bool = False) -> BuildResult:
+        """Build final package from processed datasets."""
         log.info(f"Building final package: {len(datasets)} datasets")
+        
+        # Create final directory structure
+        self.final_dir.mkdir(parents=True, exist_ok=True)
         
         total_rows = 0
         total_size = 0
+        quality_scores = []
+        type_stats = {}
+        reports = []
         
-        if merge and len(datasets) > 1:
-            # Group by format and merge
-            csv_files = [d.path for d in datasets if d.format in ('csv', 'tsv')]
-            json_files = [d.path for d in datasets if d.format in ('json', 'jsonl')]
-            other_files = [d.path for d in datasets if d.format not in ('csv', 'tsv', 'json', 'jsonl')]
-            
-            if csv_files:
-                merged = merge_csv_files(csv_files, str(self.final_dir / "merged_dataset.csv"))
-                total_size += Path(merged).stat().st_size
-            if json_files:
-                merged = merge_json_files(json_files, str(self.final_dir / "merged_dataset.json"))
-                total_size += Path(merged).stat().st_size
-            for f in other_files:
-                dest = self.final_dir / Path(f).name
-                shutil.copy2(f, dest)
-                total_size += dest.stat().st_size
-        else:
-            # Copy all processed datasets to final
-            for ds in datasets:
-                dest = self.final_dir / Path(ds.path).name
-                if Path(ds.path).exists():
-                    shutil.copy2(ds.path, dest)
-                    total_size += dest.stat().st_size
-        
+        # Copy processed files to final, organized by type
         for ds in datasets:
+            src = Path(ds.path)
+            if not src.exists():
+                continue
+            
+            # Determine type folder
+            type_name = ds.data_type.value if ds.data_type != DataType.GENERIC else "other"
+            type_dir = self.final_dir / type_name / "data"
+            type_dir.mkdir(parents=True, exist_ok=True)
+            
+            dest = type_dir / src.name
+            if not dest.exists():
+                shutil.copy2(str(src), str(dest))
+            
             total_rows += ds.row_count
+            total_size += src.stat().st_size
+            quality_scores.append(ds.quality_score)
+            
+            type_stats.setdefault(type_name, {"count": 0, "rows": 0, "size": 0, "files": []})
+            type_stats[type_name]["count"] += 1
+            type_stats[type_name]["rows"] += ds.row_count
+            type_stats[type_name]["size"] += src.stat().st_size
+            type_stats[type_name]["files"].append({
+                "name": src.name,
+                "format": ds.format,
+                "quality": ds.quality_score,
+                "rows": ds.row_count,
+                "source": ds.source_id,
+            })
         
-        # Generate README
-        self._generate_readme(datasets, query)
+        avg_quality = sum(quality_scores) / max(len(quality_scores), 1) if quality_scores else 0
         
-        # Generate quality report
-        quality_report_path = self._generate_quality_report(datasets)
+        # Write per-type metadata.json
+        for type_name, stats in type_stats.items():
+            type_dir = self.final_dir / type_name
+            type_dir.mkdir(parents=True, exist_ok=True)
+            meta = {
+                "type": type_name,
+                "count": stats["count"],
+                "total_rows": stats["rows"],
+                "total_size_bytes": stats["size"],
+                "total_size_human": self._human_size(stats["size"]),
+                "avg_quality": round(sum(f["quality"] for f in stats["files"]) / max(len(stats["files"]), 1), 3),
+                "files": stats["files"],
+            }
+            (type_dir / "metadata.json").write_text(json.dumps(meta, indent=2))
         
-        # Generate sources list
-        self._generate_sources(datasets)
+        # Write top-level files
+        self._write_readme(query, datasets, type_stats, avg_quality, total_rows, total_size)
+        self._write_quality_report(datasets, type_stats, avg_quality)
+        self._write_sources(datasets)
+        self._write_provenance(datasets)
+        self._write_lineage()
         
-        # Copy lineage if exists
-        lineage_src = self.workspace / "metadata" / "lineage.json"
-        if lineage_src.exists():
-            shutil.copy2(lineage_src, self.final_dir / "LINEAGE.json")
-        
-        # Copy provenance
-        prov_src = self.workspace / "metadata" / "provenance.json"
-        if prov_src.exists():
-            shutil.copy2(prov_src, self.final_dir / "PROVENANCE.json")
-        
-        avg_quality = sum(d.quality_score for d in datasets) / max(len(datasets), 1)
+        reports = [str(f) for f in self.final_dir.rglob("*") if f.is_file()]
         
         result = BuildResult(
             session_id=session_id,
@@ -82,52 +95,101 @@ class BuildingAgent:
             datasets_count=len(datasets),
             total_samples=total_rows,
             quality_score=round(avg_quality, 3),
-            reports=[quality_report_path],
+            reports=reports,
         )
         
-        log.info(f"Build complete: {result.datasets_count} datasets, {result.total_samples} rows, quality={result.quality_score:.2f}")
+        log.info(f"Build complete: {len(datasets)} datasets in {len(type_stats)} type folders, "
+                 f"{total_rows} rows, quality={avg_quality:.2f}, size={self._human_size(total_size)}")
         return result
     
-    def _generate_readme(self, datasets: list[DatasetInfo], query: str):
+    def _write_readme(self, query, datasets, type_stats, avg_quality, total_rows, total_size):
         lines = [
-            "# Galaxy Data - Dataset Package\n",
-            f"\n**Query:** {query}\n",
-            f"**Generated:** {time.strftime('%Y-%m-%d %H:%M:%S')}\n",
-            f"**Datasets:** {len(datasets)}\n",
-            f"**Total rows:** {sum(d.row_count for d in datasets)}\n",
-            "\n## Contents\n",
+            f"# Galaxy Data — Dataset Package",
+            f"",
+            f"**Query:** {query}",
+            f"**Generated:** {time.strftime('%Y-%m-%d %H:%M:%S')}",
+            f"",
+            f"## Summary",
+            f"| Metric | Value |",
+            f"|---|---|",
+            f"| Total Datasets | {len(datasets)} |",
+            f"| Total Rows | {total_rows:,} |",
+            f"| Total Size | {self._human_size(total_size)} |",
+            f"| Average Quality | {avg_quality:.2f} |",
+            f"| Data Types | {', '.join(type_stats.keys())} |",
+            f"",
+            f"## Structure",
+            f"```",
         ]
-        for ds in datasets:
-            lines.append(f"- **{Path(ds.path).name}** | {ds.format} | {ds.row_count} rows | quality: {ds.quality_score:.2f} | source: {ds.source_id}\n")
+        for type_name, stats in type_stats.items():
+            lines.append(f"├── {type_name}/")
+            lines.append(f"│   ├── data/         ({stats['count']} files, {self._human_size(stats['size'])})")
+            lines.append(f"│   └── metadata.json")
+        lines.extend([
+            f"├── README.md",
+            f"├── QUALITY_REPORT.json",
+            f"├── SOURCES.txt",
+            f"├── PROVENANCE.json",
+            f"└── LINEAGE.json",
+            f"```",
+            f"",
+            f"## Data Types",
+        ])
+        for type_name, stats in type_stats.items():
+            lines.append(f"### {type_name.capitalize()}")
+            lines.append(f"- **Files:** {stats['count']}")
+            lines.append(f"- **Size:** {self._human_size(stats['size'])}")
+            if stats['rows'] > 0:
+                lines.append(f"- **Rows:** {stats['rows']:,}")
+            lines.append("")
         
-        lines.append("\n## Sources\n")
-        sources = set(d.source_id for d in datasets)
-        for s in sources:
-            lines.append(f"- {s}\n")
-        
-        (self.final_dir / "README.md").write_text("".join(lines))
+        (self.final_dir / "README.md").write_text('\n'.join(lines))
     
-    def _generate_quality_report(self, datasets: list[DatasetInfo]) -> str:
+    def _write_quality_report(self, datasets, type_stats, avg_quality):
         report = {
-            "generated_at": time.time(),
+            "avg_quality": round(avg_quality, 3),
             "datasets_count": len(datasets),
-            "avg_quality": round(sum(d.quality_score for d in datasets) / max(len(datasets), 1), 3),
-            "datasets": [{
-                "name": Path(d.path).name,
-                "quality_score": d.quality_score,
-                "rows": d.row_count,
-                "columns": d.column_count,
-                "format": d.format,
-                "source": d.source_id,
-                "license": d.license,
-            } for d in datasets],
+            "type_breakdown": {},
+            "datasets": [],
         }
-        path = str(self.final_dir / "QUALITY_REPORT.json")
-        Path(path).write_text(json.dumps(report, indent=2))
-        return path
+        for type_name, stats in type_stats.items():
+            report["type_breakdown"][type_name] = {
+                "count": stats["count"],
+                "total_rows": stats["rows"],
+                "size_bytes": stats["size"],
+            }
+        for ds in datasets:
+            report["datasets"].append({
+                "name": Path(ds.path).name,
+                "format": ds.format,
+                "quality": ds.quality_score,
+                "rows": ds.row_count,
+                "type": ds.data_type.value,
+                "source": ds.source_id,
+            })
+        (self.final_dir / "QUALITY_REPORT.json").write_text(json.dumps(report, indent=2))
     
-    def _generate_sources(self, datasets: list[DatasetInfo]):
-        sources = set()
-        for d in datasets:
-            sources.add(f"Source: {d.source_id} | License: {d.license}")
-        (self.final_dir / "SOURCES.txt").write_text("\n".join(sorted(sources)))
+    def _write_sources(self, datasets):
+        sources = sorted(set(ds.source_id for ds in datasets))
+        (self.final_dir / "SOURCES.txt").write_text('\n'.join(sources) + '\n')
+    
+    def _write_provenance(self, datasets):
+        prov_path = self.workspace / "metadata" / "provenance.json"
+        if prov_path.exists():
+            shutil.copy2(str(prov_path), str(self.final_dir / "PROVENANCE.json"))
+        else:
+            (self.final_dir / "PROVENANCE.json").write_text("[]")
+    
+    def _write_lineage(self):
+        lin_path = self.workspace / "metadata" / "lineage.json"
+        if lin_path.exists():
+            shutil.copy2(str(lin_path), str(self.final_dir / "LINEAGE.json"))
+        else:
+            (self.final_dir / "LINEAGE.json").write_text("[]")
+    
+    def _human_size(self, size_bytes: int) -> str:
+        for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+            if size_bytes < 1024:
+                return f"{size_bytes:.1f} {unit}"
+            size_bytes /= 1024
+        return f"{size_bytes:.1f} PB"

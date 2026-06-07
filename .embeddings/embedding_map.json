@@ -19,5 +19,26 @@
   },
   "emb_83adff2764": {
     "text": "speech recognition audio wav dataset"
+  },
+  "emb_62d85c8eaa": {
+    "text": "speech recognition audio wav dataset"
+  },
+  "emb_6c373f8072": {
+    "text": "apple images"
+  },
+  "emb_0ec46888ee": {
+    "text": "cat and dog images for classification"
+  },
+  "emb_5d762f7f21": {
+    "text": "world population statistics data"
+  },
+  "emb_2df21f8663": {
+    "text": "music audio samples wav"
+  },
+  "emb_4520451952": {
+    "text": "sentiment analysis NLP text classification"
+  },
+  "emb_865973f77d": {
+    "text": "sentiment analysis NLP text classification"
   }
 }

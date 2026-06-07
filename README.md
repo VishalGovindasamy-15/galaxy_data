@@ -2,39 +2,61 @@
 
 **Collect, process, and package real-world datasets from the open internet — all in Python.**
 
-Galaxy Data is an automated dataset collection and processing platform. Give it a natural language query and it searches HuggingFace, GitHub, Kaggle, and the open web to find, download, validate, clean, deduplicate, and package datasets — ready for ML training.
+Galaxy Data is an automated dataset collection and processing platform. Give it a natural language query, specify the data type you want (images, audio, video, tabular, text), and it searches the entire internet to find, download, validate, clean, deduplicate, and package datasets — organized by type and ready for ML training.
 
 ---
 
 ## Quick Start
 
 ```bash
-# Install
 cd galaxy_data
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[all]"
 
-# Run
+# Collect sentiment analysis datasets
 python main.py "sentiment analysis dataset"
+
+# Collect only images
+python main.py "cat and dog images" --modality images
+
+# Interactive mode
+python main.py --interactive
 ```
 
 ---
 
 ## Usage
 
+### Normal Mode (Source-Based Collection)
 ```bash
-# Basic — search and collect datasets
 python main.py "your query here"
-
-# Control collection size (default: 10 per source)
 python main.py "iris flower dataset" --max-results 20
+python main.py "face detection" --modality images --max-results 10
+python main.py "speech emotion recognition" --modality audio
+python main.py "stock market time series" --min-size 50MB --max-results 20
+```
 
-# Enable web extraction (scrapes Wikipedia/Wikidata if no datasets found)
+### Web Extraction Mode
+```bash
 python main.py "Indian spice varieties" --extract
+python main.py "climate change data" --extract --max-pages 30
+python main.py "world GDP statistics" --extract --modality tabular --max-pages 50
+```
 
-# Full options
-python main.py "face detection images" --extract --max-results 15 --max-pages 30
+### Interactive Mode
+```bash
+python main.py --interactive
+```
+```
+🌌 galaxy> set modality images
+🌌 galaxy> set max-results 20
+🌌 galaxy> search face detection dataset
+🌌 galaxy> extract world population statistics
+🌌 galaxy> set min-size 100MB
+🌌 galaxy> search NLP sentiment analysis
+🌌 galaxy> history
+🌌 galaxy> exit
 ```
 
 ### CLI Arguments
@@ -42,131 +64,138 @@ python main.py "face detection images" --extract --max-results 15 --max-pages 30
 | Argument | Default | Description |
 |---|---|---|
 | `query` | (required) | Natural language query for datasets |
-| `--max-results` | 10 | Max datasets per source. Higher = more data collected |
-| `--extract` | off | Enable web extraction (Wikipedia tables, text, Wikidata entities) |
+| `--modality` | mixed | Filter: `images`, `audio`, `video`, `tabular`, `text`, `mixed` |
+| `--max-results` | 10 | Max datasets per source. Higher = more data |
+| `--extract` | off | Enable web extraction (Wikipedia + Wikidata) |
 | `--max-pages` | 20 | Max pages to scan during web extraction |
-| `--interactive` | off | Interactive mode (future) |
-| `--user-id` | "default" | User identifier |
+| `--min-size` | 0 | Min data size target (e.g. `10MB`, `1GB`). Loops until met |
+| `--interactive` | off | Interactive REPL mode |
 
 ---
 
 ## What It Collects
 
-### Data Types
-| Type | Extensions | Sources |
+### Data Types & Modality Filter
+| Modality | Extensions | What It Collects |
 |---|---|---|
-| **Tabular** | CSV, TSV, JSON, JSONL, Parquet | HuggingFace, GitHub, WebSearch |
-| **Document** | TXT, HTML, MD, PDF | GitHub, WebSearch |
-| **Image** | JPG, PNG, GIF, BMP, WebP | GitHub, HuggingFace |
-| **Audio** | WAV, MP3, FLAC, OGG | GitHub, HuggingFace |
-| **Video** | MP4, AVI, MKV, WebM | GitHub, HuggingFace |
+| `images` | JPG, PNG, GIF, BMP, WebP, TIFF, SVG | Only image files |
+| `audio` | MP3, WAV, FLAC, OGG, M4A, AAC | Only audio files |
+| `video` | MP4, AVI, MKV, MOV, WebM | Only video files |
+| `tabular` | CSV, TSV, JSON, JSONL, Parquet, XLSX | Only structured data |
+| `text` | TXT, MD, HTML, PDF, XML | Only documents |
+| `mixed` | All of the above | Everything (default) |
 
 ### Data Sources
-| Source | Method | Auth Required |
+| Source | Method | What It Finds |
 |---|---|---|
-| **HuggingFace Hub** | Free API (search + download) | No |
-| **GitHub** | Free API (repo search + raw download) | No |
-| **Kaggle** | Web scraping (metadata only) | Yes (download) |
-| **Web Search** | Portal crawling + GitHub code search | No |
-| **Web Extraction** | Wikipedia tables/text + Wikidata | No |
+| **HuggingFace Hub** | Free API | ML datasets (all formats) |
+| **GitHub** | Free API | Repos with data files |
+| **Kaggle** | Web scraping | Dataset metadata |
+| **Web Search** | Portal crawling | Open data portals |
+| **Search Engine** | DuckDuckGo HTML | Any website on the internet |
+| **Web Extraction** | Wikipedia + Wikidata | Tables, text, entities |
 
 ---
 
 ## Pipeline Architecture
 
 ```
-Query → Parse → Discover → Collect → Validate → Dedup → Score → Clean → Build
-  │        │         │          │         │         │       │       │       │
-  │   NL Parser  Source     Spiders  Format   Hash    Quality  Normalize  Package
-  │   (rules)   Registry   (HF,GH)  Check    Check   0-1.0   Encoding   + README
-  │              FAISS               Type              Score              + Report
-  └─────────────────────────────────────────────────────────────────────────┘
-                              Lineage Tracking + Provenance
+Query → Parse → Discover → Collect → Filter → Validate → Dedup → Pipeline → Build
+  │        │         │          │        │         │         │        │         │
+  │   NL Parser  Sources    Spiders  Relevance  Format   Hash    Type-    Package
+  │   (rules)   (5+DDG)    (6 src)  Check      Check    Match   specific  by type
+  │              FAISS                                           Pipeline
+  └───────────────────────────────────────────────────────────────────────────┘
+                     Lineage Tracking + Provenance + Collection Loop
 ```
 
 ### Pipeline Stages
 
-1. **Query Parser** — Rule-based NLP: detects domains (NLP, CV, medical...), language, modality, quality threshold, output format, merge flag
-2. **Source Discovery** — Registry of 5 free sources + FAISS embedding similarity search
-3. **Collection** — Per-source spiders with rate limiting + circuit breakers
-4. **Validation** — Format detection, type classification (tabular/image/audio/video/document)
-5. **Deduplication** — Exact hash matching across all collected files
-6. **Quality Scoring** — Completeness, consistency, row count metrics (0-1.0 scale)
-7. **Cleaning** — Encoding normalization, whitespace cleanup, row alignment
-8. **Building** — Package with README, QUALITY_REPORT.json, SOURCES.txt, PROVENANCE.json, LINEAGE.json
+1. **Query Parser** — Detects domains, language, modality, quality threshold
+2. **Source Discovery** — Registry of 6 sources + FAISS similarity + search engine
+3. **Collection Loop** — Collects from all sources, loops if `--min-size` not met
+4. **Modality Filter** — Keeps only files matching `--modality` (images/audio/video/tabular/text)
+5. **Relevance Filter** — Scores files against query terms, removes unrelated data
+6. **Validation** — Format detection, magic byte verification for media
+7. **Deduplication** — Exact hash matching across all files
+8. **Typed Pipelines** — Separate processing for tabular, document, image, audio, video
+9. **Quality Scoring** — Completeness + consistency metrics (0-1.0)
+10. **Building** — Package into type-separated folders with metadata
 
 ---
 
 ## Output Structure
 
-After a run, the workspace looks like:
+Every run produces organized output:
 
 ```
-workspace/session_XXXX/
-├── raw/                    # Original downloaded files
-│   ├── source_huggingface/
-│   ├── source_github/
-│   ├── source_kaggle/
-│   ├── source_web_search/
-│   └── source_web_extraction/
-├── processed/              # Cleaned + validated files
-├── final/                  # Packaged output (your deliverable)
-│   ├── README.md           # Auto-generated dataset documentation
-│   ├── QUALITY_REPORT.json # Per-file quality scores
-│   ├── SOURCES.txt         # Source attribution
-│   ├── PROVENANCE.json     # Full processing history
-│   ├── LINEAGE.json        # Data origin tracking
-│   └── *.csv, *.json, ...  # Cleaned dataset files
-└── metadata/
-    ├── session_info.json
-    ├── progress.json
-    ├── lineage.json
-    └── provenance.json
+final/
+├── tabular/              # CSV, JSON, TSV files
+│   ├── data/
+│   │   ├── cleaned_dataset1.csv
+│   │   └── cleaned_dataset2.json
+│   └── metadata.json
+├── images/               # Image files only
+│   ├── data/
+│   │   ├── photo1.jpg
+│   │   └── photo2.png
+│   └── metadata.json
+├── audio/                # Audio files only
+│   ├── data/
+│   │   ├── sample1.wav
+│   │   └── sample2.mp3
+│   └── metadata.json
+├── video/                # Video files only
+│   ├── data/
+│   │   └── clip.mp4
+│   └── metadata.json
+├── documents/            # Text documents
+│   ├── data/
+│   │   └── report.txt
+│   └── metadata.json
+├── README.md             # Auto-generated documentation
+├── QUALITY_REPORT.json   # Per-file quality scores
+├── SOURCES.txt           # Source attribution
+├── PROVENANCE.json       # Full processing history
+└── LINEAGE.json          # Data origin tracking
 ```
 
 ---
 
 ## Key Features
 
-### Lineage Tracking
-Every dataset knows where it came from, what happened to it, and what files contributed to it.
-```json
-{
-  "lineage_id": "lin_abc123",
-  "dataset_path": "cleaned_iris.csv",
-  "source_url": "https://raw.githubusercontent.com/...",
-  "source_id": "github",
-  "collection_timestamp": 1717680000,
-  "transformations": [
-    {"action": "validated", "timestamp": 1717680001},
-    {"action": "cleaned", "timestamp": 1717680002}
-  ]
-}
-```
+### Collection Loop (`--min-size`)
+When `--min-size` is set, the system loops collection rounds (up to 3), increasing `max_results` each round until the target size is reached.
 
-### Provenance Tracking
-Full event log of every processing step:
-- `validated` → `schema_detected` → `quality_scored` → `cleaned` → `skipped` (if duplicate)
+### Modality-Aware Collection
+When `--modality images` is specified, only image files are downloaded. CSVs, TXTs, and videos are filtered out at collection time — not just at the end.
 
-### Circuit Breaker
-Per-source failure tracking prevents cascading failures. If a source fails 5 times, the circuit opens and skips it for subsequent requests (with exponential backoff recovery).
+### Relevance Filtering
+Files are scored against query terms by:
+- **Filename** (40%): Does the filename contain query words?
+- **Content** (40%): Does the file content mention query terms?
+- **File size** (10%): Larger files score higher
+- **Parent directory** (10%): For binary files
 
-### Deduplication
-Exact file hash matching across ALL sources. In tests, the system caught identical Iris datasets from 3 different GitHub repos and kept only 1.
+### Search Engine Spider
+Uses DuckDuckGo HTML search (no API key needed) to find datasets anywhere on the internet. Not limited to fixed sources.
 
-### Web Extraction (--extract)
-When no existing datasets are found, the system scrapes:
-- **Wikipedia tables** — Structured data from any topic
+### Typed Processing Pipelines
+Each data type has its own pipeline:
+- **Tabular**: Row alignment, whitespace cleanup, encoding normalization
+- **Image**: Magic byte validation (JPEG/PNG/GIF/BMP/WebP headers)
+- **Audio**: Header validation (ID3/RIFF/fLaC/OggS)
+- **Video**: Header validation (ftyp/RIFF/MKV magic)
+- **Document**: Text cleanup, empty line removal
+
+### Web Extraction (`--extract`)
+Scrapes data from the web when existing datasets aren't enough:
+- **Wikipedia tables** — Structured tabular data from any topic
 - **Wikipedia text** — Article paragraphs as text corpus
 - **Wikidata entities** — Structured knowledge graph entities
 
-Creates separate CSV and JSON output files for each extraction type.
-
-### Quality Scoring
-Each dataset gets a 0.0-1.0 quality score based on:
-- **Completeness** (60%) — % of non-empty cells
-- **Consistency** (40%) — Row length consistency with headers
-- Files with quality < 0.5 get flagged in the report
+### Lineage & Provenance
+Every dataset tracks: where it came from, what happened to it, every processing step.
 
 ---
 
@@ -174,28 +203,29 @@ Each dataset gets a 0.0-1.0 quality score based on:
 
 ```
 galaxy_data/
-├── main.py                          # CLI entry point
-├── pyproject.toml                   # Dependencies
+├── main.py                           # CLI entry point
+├── pyproject.toml                    # Dependencies
+├── README.md                         # This file
 ├── galaxy/
-│   ├── types.py                     # All dataclasses and enums
-│   ├── config.py                    # Configuration
-│   ├── utils/                       # Hashing, retry
-│   ├── cache/                       # 3-tier cache (L1/L2/L3)
-│   ├── storage/                     # Session workspace, dataset store
-│   ├── knowledge/                   # Source registry, metadata store, lineage
-│   ├── intelligence/                # Query parser, FAISS embeddings
-│   ├── collection/                  # Crawler pool, rate limiter, circuit breaker
-│   │   └── spiders/                 # HuggingFace, GitHub, Kaggle, WebSearch, Generic
-│   ├── processing/                  # Validator, schema detector, quality scorer
-│   │   │                            # cleaner, deduplicator, merger, provenance
-│   │   └── router.py               # Processing Router (routes by data type)
-│   ├── agents/                      # Building agent, web extraction agent
-│   └── orchestrator/                # Main pipeline controller
-└── scrapling/                       # Scrapling framework (vendored)
+│   ├── types.py                      # Core dataclasses (25+ types)
+│   ├── config.py                     # Configuration
+│   ├── utils/                        # Hashing, retry
+│   ├── cache/                        # 3-tier cache (L1/L2/L3)
+│   ├── storage/                      # Session workspace, dataset store
+│   ├── knowledge/                    # Source registry, metadata, lineage
+│   ├── intelligence/                 # Query parser, FAISS embeddings
+│   ├── collection/                   # Rate limiter, circuit breaker
+│   │   └── spiders/                  # 6 spiders (HF, GH, Kaggle, Web, Generic, Search)
+│   ├── processing/                   # Validator, schema, quality, dedup, cleaner
+│   │   └── pipelines/                # Typed: tabular, document, image, generic
+│   ├── agents/                       # Discovery, collection, processing, building, web extraction
+│   ├── orchestrator/                 # State machine + main orchestrator
+│   └── gateway/                      # Interactive gateway
+└── scrapling/                        # Scrapling framework (vendored)
 ```
 
 ### Module Count
-- **Galaxy modules:** 46 Python files
+- **Galaxy modules:** 57 Python files
 - **Scrapling (vendored):** 51 Python files
 
 ---
@@ -206,62 +236,26 @@ All Python, no external services required.
 
 | Package | Purpose |
 |---|---|
-| `faiss-cpu` | Vector similarity search (FAISS) |
-| `fakeredis` | In-memory Redis (no Redis server needed) |
-| `aiosqlite` | Async SQLite for metadata |
-| `lxml` | HTML parsing for web extraction |
-| `scrapling` | Web scraping framework (vendored) |
+| `faiss-cpu` | Vector similarity search |
+| `fakeredis` | In-memory Redis cache |
+| `aiosqlite` | Async SQLite metadata |
+| `lxml` | HTML parsing |
+| `scrapling` | Web scraping (vendored) |
 
-Install all:
 ```bash
 pip install -e ".[all]"
 ```
 
 ---
 
-## Examples
-
-### Collect sentiment analysis datasets
-```bash
-python main.py "sentiment analysis dataset" --max-results 10
-# Result: 18 datasets, 151K+ rows from HuggingFace + GitHub
-```
-
-### Collect face detection images + videos
-```bash
-python main.py "face detection image dataset" --max-results 5 --extract
-# Result: 15 files (10 images + 2 videos + 3 extracted tables)
-```
-
-### Collect speech/audio data
-```bash
-python main.py "speech recognition audio wav dataset" --max-results 5
-# Result: 7 files (WAV audio + images)
-```
-
-### Create dataset from any topic (web extraction)
-```bash
-python main.py "Indian spice varieties" --extract --max-pages 30
-# Result: Tables + text extracted from Wikipedia/Wikidata
-```
-
-### Classic ML dataset (with dedup)
-```bash
-python main.py "iris flower classification CSV"
-# Result: 1 unique dataset (dedup caught 2 copies), 150 rows, quality 1.00
-```
-
----
-
 ## Tested Results
 
-| Query | Files | Rows | Quality | Formats | Duration |
-|---|---|---|---|---|---|
-| sentiment analysis | 18 | 151,741 | 0.97 | CSV, TSV, JSON, TXT | 48s |
-| Indian spice varieties | 4 | 485 | 0.41 | CSV, JSON | 54s |
-| iris flower CSV | 1 | 150 | 1.00 | CSV | 42s |
-| face detection images | 15 | 623 | 0.93 | JPG, PNG, MP4, CSV | 62s |
-| speech audio wav | 7 | 0 | 0.98 | WAV, JPG, PNG | 20s |
+| Query | Mode | Modality | Files | Rows | Quality | Size | Duration |
+|---|---|---|---|---|---|---|---|
+| cat dog images | Normal | images | 9 | 0 | 1.00 | 6.4 MB | 37s |
+| world population | Extract | tabular | 6 | 3,814 | 0.80 | 1.2 MB | 62s |
+| music audio wav | Normal | audio | 5 | 0 | 1.00 | 6.3 MB | 34s |
+| sentiment NLP | Extract | mixed | 16 | 35,338 | 0.90 | 34.6 MB | 69s |
 
 ---
 
@@ -269,11 +263,11 @@ python main.py "iris flower classification CSV"
 
 - [ ] Authenticated sources (Kaggle download, HuggingFace private)
 - [ ] Synthetic data engine
-- [ ] Distributed processing layer
-- [ ] Interactive CLI mode
-- [ ] StealthyFetcher/DynamicFetcher integration (Scrapling browser modes)
-- [ ] Parquet native support
+- [ ] Distributed processing layer  
+- [ ] Parquet/Arrow native support
 - [ ] Dataset versioning
+- [ ] REST API gateway
+- [ ] StealthyFetcher (headless Chrome for JS-heavy sites)
 
 ---
 
